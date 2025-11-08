@@ -1,151 +1,76 @@
 import { DataProvider } from '@refinedev/core';
-import { supabase } from '@/utils/supabase';
+
+// 使用 API 路由而不是直接访问 Supabase
+// 这样 SERVICE_ROLE_KEY 只在服务端使用，不会暴露给前端
+async function apiRequest(action: string, resource: string, params: any = {}) {
+  const response = await fetch('/api/data', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action,
+      resource,
+      params,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'API request failed');
+  }
+
+  return response.json();
+}
 
 export const dataProvider: DataProvider = {
   getList: async ({ resource, pagination, filters, sorters, meta }) => {
-    const { current = 1, pageSize = 10 } = pagination ?? {};
-
-    let query = supabase.from(resource as any).select('*', { count: 'exact' });
-
-    // 应用过滤器
-    if (filters) {
-      filters.forEach((filter) => {
-        if ('field' in filter) {
-          const { field, operator, value } = filter;
-
-          switch (operator) {
-            case 'eq':
-              query = query.eq(field, value);
-              break;
-            case 'ne':
-              query = query.neq(field, value);
-              break;
-            case 'lt':
-              query = query.lt(field, value);
-              break;
-            case 'gt':
-              query = query.gt(field, value);
-              break;
-            case 'lte':
-              query = query.lte(field, value);
-              break;
-            case 'gte':
-              query = query.gte(field, value);
-              break;
-            case 'in':
-              query = query.in(field, value);
-              break;
-            case 'contains':
-              query = query.ilike(field, `%${value}%`);
-              break;
-            case 'containss':
-              query = query.like(field, `%${value}%`);
-              break;
-          }
-        }
-      });
-    }
-
-    // 应用排序
-    if (sorters && sorters.length > 0) {
-      sorters.forEach((sorter) => {
-        if (sorter.field) {
-          query = query.order(sorter.field, {
-            ascending: sorter.order === 'asc',
-          });
-        }
-      });
-    }
-
-    // 应用分页
-    if (pagination?.mode === 'off') {
-      // 不分页
-    } else {
-      const from = (current - 1) * pageSize;
-      const to = from + pageSize - 1;
-      query = query.range(from, to);
-    }
-
-    const { data, error, count } = await query;
-
-    if (error) {
-      throw error;
-    }
+    const result = await apiRequest('getList', resource, {
+      pagination,
+      filters,
+      sorters,
+    });
 
     return {
-      data: (data || []) as any,
-      total: count || 0,
+      data: result.data as any,
+      total: result.total,
     };
   },
 
   getOne: async ({ resource, id }) => {
-    const { data, error } = await supabase
-      .from(resource as any)
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    if (error) {
-      throw error;
-    }
+    const result = await apiRequest('getOne', resource, { id });
 
     return {
-      data: data as any,
+      data: result.data as any,
     };
   },
 
   create: async ({ resource, variables }) => {
-    const { data, error } = await supabase
-      .from(resource as any)
-      .insert(variables as any)
-      .select()
-      .single();
-
-    if (error) {
-      throw error;
-    }
+    const result = await apiRequest('create', resource, { variables });
 
     return {
-      data: data as any,
+      data: result.data as any,
     };
   },
 
   update: async ({ resource, id, variables }) => {
-    const { data, error } = await supabase
-      .from(resource as any)
-      .update(variables as any)
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) {
-      throw error;
-    }
+    const result = await apiRequest('update', resource, { id, variables });
 
     return {
-      data: data as any,
+      data: result.data as any,
     };
   },
 
   deleteOne: async ({ resource, id }) => {
-    const { data, error } = await supabase
-      .from(resource as any)
-      .delete()
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) {
-      throw error;
-    }
+    const result = await apiRequest('deleteOne', resource, { id });
 
     return {
-      data: data as any,
+      data: result.data as any,
     };
   },
 
   getApiUrl: () => {
-    return process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+    return '/api/data';
   },
 
   custom: async ({ url, method, filters, sorters, payload, query, headers }) => {

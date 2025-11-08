@@ -13,18 +13,31 @@ cp .env.local.example .env.local
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://pyxylchyjomttmavzxng.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=你的-anon-key
+SUPABASE_SERVICE_ROLE_KEY=你的-service-role-key
 NEXT_PUBLIC_ADMIN_PASSWORD=你的管理密码
 ```
 
-### 如何获取 Supabase 密钥？
+### ⚠️ 重要：如何获取 Supabase Service Role Key？
 
+**为什么需要 Service Role Key？**
+- 后台管理系统需要绕过 RLS（Row Level Security）策略查看所有数据
+- `anon key` 只能查看受 RLS 策略允许的数据
+- `service_role key` 拥有完全访问权限，可以查看所有数据
+
+**获取步骤：**
 1. 访问 [Supabase Dashboard](https://supabase.com/dashboard)
 2. 选择您的项目：pyxylchyjomttmavzxng
 3. 进入 **Settings** → **API**
 4. 复制：
    - **Project URL** → `NEXT_PUBLIC_SUPABASE_URL`
-   - **anon/public key** → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - **service_role key** (点击"Reveal"显示) → `SUPABASE_SERVICE_ROLE_KEY`
+
+**✅ 安全性说明：**
+- ✅ Service Role Key **没有** `NEXT_PUBLIC_` 前缀
+- ✅ Next.js 只会将 `NEXT_PUBLIC_` 开头的变量打包到前端
+- ✅ `SUPABASE_SERVICE_ROLE_KEY` 只在服务端 API 路由中使用
+- ✅ 前端代码无法访问此密钥，完全安全
+- ⚠️ 请勿将 `.env.local` 提交到 Git（已在 .gitignore 中）
 
 ## 2. 启动开发服务器
 
