@@ -1,66 +1,108 @@
 'use client';
 
-import { Refine } from '@refinedev/core';
-import { RefineThemes, RefineSnackbarProvider, ThemedLayoutV2 } from '@refinedev/mui';
-import routerProvider from '@refinedev/nextjs-router';
-import { CssBaseline, ThemeProvider } from '@mui/material';
-import { dataProvider } from '@/providers/dataProvider';
-import { authProvider } from '@/providers/authProvider';
-import { useEffect, useState } from 'react';
-
-// 临时资源配置，后续会从 schema.json 动态生成
-const resources = [
-  {
-    name: 'users',
-    list: '/users',
-    show: '/users/:id',
-    edit: '/users/:id/edit',
-    meta: {
-      label: '用户管理',
-    },
-  },
-];
+import RefineProvider from '@/providers/RefineProvider';
+import {
+  Card,
+  CardContent,
+  Typography,
+  Grid,
+  Box,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Paper,
+} from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { resources } from '@/config/resources';
 
 export default function Home() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
-
   return (
-    <ThemeProvider theme={RefineThemes.Blue}>
-      <CssBaseline />
-      <RefineSnackbarProvider>
-        <Refine
-          routerProvider={routerProvider}
-          dataProvider={dataProvider}
-          authProvider={authProvider}
-          resources={resources}
-          options={{
-            syncWithLocation: true,
-            warnWhenUnsavedChanges: true,
-          }}
-        >
-          <ThemedLayoutV2>
-            <div style={{ padding: '24px' }}>
-              <h1>欢迎使用 Supabase Board</h1>
-              <p>这是一个用于展示和管理 Supabase 数据的后台管理系统</p>
-              <h2>快速开始</h2>
-              <ol>
-                <li>配置 .env.local 文件中的 Supabase 连接信息</li>
-                <li>运行 <code>npm run sync-schema</code> 同步数据库表结构</li>
-                <li>运行 <code>npm run prepare-schema</code> 生成类型定义</li>
-                <li>刷新页面查看您的数据表</li>
-              </ol>
-            </div>
-          </ThemedLayoutV2>
-        </Refine>
-      </RefineSnackbarProvider>
-    </ThemeProvider>
+    <RefineProvider>
+      <Box sx={{ p: 3 }}>
+        <Typography variant="h4" gutterBottom>
+          欢迎使用 Supabase Board
+        </Typography>
+        <Typography variant="body1" color="text.secondary" paragraph>
+          这是一个用于展示和管理 Supabase 数据的后台管理系统
+        </Typography>
+
+        <Grid container spacing={3} sx={{ mt: 2 }}>
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  可用数据表
+                </Typography>
+                <Typography variant="body2" color="text.secondary" paragraph>
+                  当前系统已识别 {resources.length} 个数据表，请从左侧菜单中选择查看
+                </Typography>
+                <Paper variant="outlined" sx={{ maxHeight: 400, overflow: 'auto' }}>
+                  <List dense>
+                    {resources.map((resource) => (
+                      <ListItem key={resource.name}>
+                        <ListItemIcon>{resource.icon}</ListItemIcon>
+                        <ListItemText
+                          primary={resource.label}
+                          secondary={resource.name}
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+                </Paper>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  功能特性
+                </Typography>
+                <List>
+                  <ListItem>
+                    <ListItemIcon>
+                      <CheckCircleIcon color="success" />
+                    </ListItemIcon>
+                    <ListItemText primary="自动识别数据库表结构" />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemIcon>
+                      <CheckCircleIcon color="success" />
+                    </ListItemIcon>
+                    <ListItemText primary="支持数据查看、搜索、筛选" />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemIcon>
+                      <CheckCircleIcon color="success" />
+                    </ListItemIcon>
+                    <ListItemText primary="智能字段类型识别和展示" />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemIcon>
+                      <CheckCircleIcon color="success" />
+                    </ListItemIcon>
+                    <ListItemText primary="图片预览和 JSON 格式化" />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemIcon>
+                      <CheckCircleIcon color="success" />
+                    </ListItemIcon>
+                    <ListItemText primary="时间戳自动格式化" />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemIcon>
+                      <CheckCircleIcon color="success" />
+                    </ListItemIcon>
+                    <ListItemText primary="ID 字段快速复制" />
+                  </ListItem>
+                </List>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Box>
+    </RefineProvider>
   );
 }

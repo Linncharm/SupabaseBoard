@@ -5,7 +5,7 @@ export const dataProvider: DataProvider = {
   getList: async ({ resource, pagination, filters, sorters, meta }) => {
     const { current = 1, pageSize = 10 } = pagination ?? {};
 
-    let query = supabase.from(resource).select('*', { count: 'exact' });
+    let query = supabase.from(resource as any).select('*', { count: 'exact' });
 
     // 应用过滤器
     if (filters) {
@@ -73,14 +73,14 @@ export const dataProvider: DataProvider = {
     }
 
     return {
-      data: data || [],
+      data: (data || []) as any,
       total: count || 0,
     };
   },
 
   getOne: async ({ resource, id }) => {
     const { data, error } = await supabase
-      .from(resource)
+      .from(resource as any)
       .select('*')
       .eq('id', id)
       .single();
@@ -90,14 +90,14 @@ export const dataProvider: DataProvider = {
     }
 
     return {
-      data,
+      data: data as any,
     };
   },
 
   create: async ({ resource, variables }) => {
     const { data, error } = await supabase
-      .from(resource)
-      .insert(variables)
+      .from(resource as any)
+      .insert(variables as any)
       .select()
       .single();
 
@@ -106,14 +106,14 @@ export const dataProvider: DataProvider = {
     }
 
     return {
-      data,
+      data: data as any,
     };
   },
 
   update: async ({ resource, id, variables }) => {
     const { data, error } = await supabase
-      .from(resource)
-      .update(variables)
+      .from(resource as any)
+      .update(variables as any)
       .eq('id', id)
       .select()
       .single();
@@ -123,13 +123,13 @@ export const dataProvider: DataProvider = {
     }
 
     return {
-      data,
+      data: data as any,
     };
   },
 
   deleteOne: async ({ resource, id }) => {
     const { data, error } = await supabase
-      .from(resource)
+      .from(resource as any)
       .delete()
       .eq('id', id)
       .select()
@@ -140,7 +140,7 @@ export const dataProvider: DataProvider = {
     }
 
     return {
-      data,
+      data: data as any,
     };
   },
 
