@@ -1,0 +1,43 @@
+{
+  "name": "supabase-board",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "sync-schema": "tsx scripts/sync-schema.ts",
+    "prepare-schema": "tsx scripts/prepare-schema.ts"
+  },
+  "dependencies": {
+    "@refinedev/core": "^4.47.1",
+    "@refinedev/nextjs-router": "^6.0.0",
+    "@refinedev/mui": "^5.14.4",
+    "@refinedev/react-hook-form": "^4.8.14",
+    "@refinedev/inferencer": "^4.5.17",
+    "@refinedev/simple-rest": "^5.0.1",
+    "@supabase/supabase-js": "^2.39.3",
+    "@mui/material": "^5.15.6",
+    "@mui/x-data-grid": "^6.18.7",
+    "@mui/icons-material": "^5.15.6",
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.49.3",
+    "next": "14.1.0",
+    "dayjs": "^1.11.10"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "typescript": "^5.3.3",
+    "tsx": "^4.7.0",
+    "dotenv": "^16.4.1",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "14.1.0"
+  }
+}
